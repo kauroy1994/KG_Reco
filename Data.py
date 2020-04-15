@@ -11,6 +11,9 @@ class Reco_data(object):
 
         self.context_data = None
         self.collab_data = None
+        self.collab_bk = ['listens(+person,+song)',
+                   'listened(-person,+song)']
+        self.collab_target = 'listens'
 
     def get_artist_and_album(self,artist_albums,album_songs,song):
         """gets artist and album pertaining
@@ -43,7 +46,7 @@ class Reco_data(object):
         popular = [int(random() > 0.5) for i in range(n_artists)]
         p_types = [('fan'+str(i)) for i in range(n_artists)]
         p_types += ['art_pop','song_pop']
-        n_persons = 1
+        n_persons = 10
         persons = [('p'+str(i)) for i in range(n_persons)]
         person_types = [choice(p_types) for i in range(n_persons)]
         #print (person_types)
@@ -97,22 +100,29 @@ class Reco_data(object):
                 if person_type == 'song_pop':
                     r = random()
                     if r < 0.8:
+                        """
                         u_persons = list(set([item.split('(')[1].split(',')[0] for item in listened_copy if item.split('(')[1].split(',')[0] != person]))
                         persons_who_listen_to_song = [item.split('(')[1].split(',')[0] for item in listened_copy if (item.split('(')[1].split(',')[0] != person and item.split('(')[1].split(',')[1][:-2] == song)]
                         u_persons_who_listen_to_song = list(set(persons_who_listen_to_song))
-                        if len(u_persons_who_listen_to_song) >= 0.8*len(u_persons):
-                            pos.append('listens('+person+','+song+').')
+                        """
+                        
+                        for item in listened_copy:
+                            if item.split('(')[1].split(',')[0] == person:
+                                continue
+                            else:
+                                if item.split('(')[1].split(',')[1][:-2] == song:
+                                    pos.append('listens('+person+','+song+').')
+                                    break
                     else:
                         neg.append('listens('+person+','+song+').')
 
         self.collab_data = (facts,pos,neg)
             
 #====================TEST CASE================================
-
+"""
 def main():
-    """main method creates recommendation data object
-       and populates context based and collaborative data
-    """
+    #main method creates recommendation data object
+    #and populates context based and collaborative data
     
     data = Reco_data()
     data.get_data()
@@ -120,4 +130,4 @@ def main():
 if __name__ == '__main__':
     main()
                     
-                
+"""                

@@ -199,10 +199,13 @@ class PhiMap(object):
                 prev_degree_nodes = PhiMap.clauses[d-1]
                 for node in prev_degree_nodes:
                     conditions = PhiMap.get_conditions(facts,bk,node.var_types)
+                    node_conditions = node.clause.split(':-')[1].split(';')
                     for condition in conditions[0]:
                         positive_covered = False
                         negative_covered = False
                         node_examples = {}
+                        if condition[0] in node_conditions:
+                            continue
                         clause = node.clause+';'+condition[0]
                         example_list = list(node.examples.keys())
                         n = len(example_list)
@@ -265,16 +268,16 @@ class PhiMap(object):
                 if PhiMap.equals(clause,PhiMap.clause_list[i],facts,pos,neg):
                     redundant = True
             if not redundant:
-                unique.append(PhiMap.clause_list[i].replace(';',','))
+                unique.append(PhiMap.clause_list[i])
 
         PhiMap.clause_list = unique
                     
 # --> TODO: ============ WRITE TEST CASE HERE ASAP =================
 
-                
+"""                
 def main():
-    """main method
-    """
+    #main method
+    
 
     train_data = ['o(m1,d1)','r(m1,w1,st)','o(m2,d2)','r(m2,w2,st)','o(m3,d3)','r(m3,w3,st)','o(m4,d4)','r(m4,w4,lt)','r(m5,w5,st)','r(m6,w6,lt)','r(m7,w7,lt)']
     train_pos = ['h(m1)','h(m2)','h(m4)','h(m6)']
@@ -290,3 +293,4 @@ def main():
 if __name__ == '__main__':
 
     main()
+"""
