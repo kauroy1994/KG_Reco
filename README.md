@@ -1,7 +1,7 @@
 # KG_Reco
-*Recommendation based on Knowledge graph data (experiment)*
+**Recommendation based on Knowledge graph data (experiment)**
 
-*To run*:
+**To run**:
 
 1. unzip 
 
