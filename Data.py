@@ -14,6 +14,11 @@ class Reco_data(object):
         self.collab_bk = ['listens(+person,+song)',
                    'listened(-person,+song)']
         self.collab_target = 'listens'
+        self.context_bk = ['pop(+artist,#value)',
+                           'sungby(+song,+artist)',
+                           'listens(+person,+song)']
+        #'by(+album,+artist)','in(+song,+album)',
+        self.context_target = 'listens'
 
     def get_artist_and_album(self,artist_albums,album_songs,song):
         """gets artist and album pertaining
@@ -53,8 +58,9 @@ class Reco_data(object):
         #print (popular)
         n_songs = len(songs)
         for artist in artist_albums:
-            if 'pop('+artist+','+(str(bool(popular[artists.index(artist)]))).lower()+').' not in facts:
-                facts.append('pop('+artist+','+(str(bool(popular[artists.index(artist)]))).lower()+').')
+            if popular[artists.index(artist)]:
+                if 'pop('+artist+','+(str(bool(popular[artists.index(artist)]))).lower()+').' not in facts:
+                    facts.append('pop('+artist+','+(str(bool(popular[artists.index(artist)]))).lower()+').')
             for album in artist_albums[artist]:
                 if 'by('+album+','+artist+').' not in facts:
                     facts.append('by('+album+','+artist+').')
@@ -117,6 +123,7 @@ class Reco_data(object):
                         neg.append('listens('+person+','+song+').')
 
         self.collab_data = (facts,pos,neg)
+
             
 #====================TEST CASE================================
 """

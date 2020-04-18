@@ -38,7 +38,7 @@ class PhiMap(object):
 
     target = None
     score_threshold = 0.99
-    max_degree = 3
+    max_degree = 2
     all_vars = list(ascii_uppercase)
     target_pred = ''
     clauses = {}
@@ -49,6 +49,14 @@ class PhiMap(object):
     def init():
         """initializes clauses
         """
+        PhiMap.target = None
+        PhiMap.score_threshold = 0.99
+        PhiMap.max_degree = 2
+        PhiMap.all_vars = list(ascii_uppercase)
+        PhiMap.target_pred = ''
+        PhiMap.clauses = {}
+        PhiMap.clause_list = []
+        PhiMap.var_types = {}
         for d in range(PhiMap.max_degree):
             PhiMap.clauses[d] = []
 
@@ -101,7 +109,7 @@ class PhiMap(object):
                         if not seen:
                             for new_var in PhiMap.all_vars:
                                 if new_var not in node_var_types:
-                                    args[i].append[new_var]
+                                    args[i].append(new_var)
                                     node_var_types[new_var] = typ
                                     break
                 #if '-' then set with new var not in clause
@@ -179,8 +187,11 @@ class PhiMap(object):
                     node_examples = {}
                     clause = PhiMap.target_pred+':-'
                     clause += condition[0]
+                    if PhiMap.senseless(clause):
+                        continue
                     example_list = list(examples.keys())
                     n = len(example_list)
+                    #print (clause)
                     Prover.rule = clause
                     Prover.facts = facts
                     for example in example_list:
@@ -196,6 +207,7 @@ class PhiMap(object):
                         PhiMap.clause_list.append(node.clause)
 
             if d > 0:
+                #print ('='*80)
                 prev_degree_nodes = PhiMap.clauses[d-1]
                 for node in prev_degree_nodes:
                     conditions = PhiMap.get_conditions(facts,bk,node.var_types)
@@ -207,8 +219,11 @@ class PhiMap(object):
                         if condition[0] in node_conditions:
                             continue
                         clause = node.clause+';'+condition[0]
+                        if PhiMap.senseless(clause):
+                            continue
                         example_list = list(node.examples.keys())
                         n = len(example_list)
+                        #print (clause)
                         Prover.rule = clause
                         Prover.facts = facts
                         for example in example_list:
@@ -219,9 +234,11 @@ class PhiMap(object):
                                 negative_covered = True
                                 node_examples[example] = 0
                         if positive_covered and negative_covered:
-                            node = Node(facts,node_examples,bk,clause,conditions[1])
-                            PhiMap.clauses[d].append(node)
-                            PhiMap.clause_list.append(node.clause)
+                            new_node = Node(facts,node_examples,bk,clause,conditions[1])
+                            PhiMap.clauses[d].append(new_node)
+                            PhiMap.clause_list.append(new_node.clause)
+                            
+        PhiMap.remove_copies()        
 
     @staticmethod
     def equals(clause1,clause2,facts,pos,neg):
@@ -253,6 +270,43 @@ class PhiMap(object):
 
         return False
 
+    @staticmethod
+    def senseless(clause):
+        """removes senseless clauses
+        """
+        clause_head = clause.split(':-')[0]
+        clause_body = clause.split(':-')[1].split(';')
+        head_vars = clause_head.split('(')[1][:-1].split(',')
+        body_vars = []
+        for literal in clause_body:
+            literal_vars = literal.split('(')[1][:-1].split(',')
+            body_vars += literal_vars
+        for var in body_vars:
+            if var in head_vars:
+                return False
+        return True
+
+    @staticmethod
+    def remove_copies():
+        """removes clause copies
+        """
+
+        nc = []
+        
+        n = len(PhiMap.clause_list)
+        for i in range(n):
+            copied = False
+            curr = PhiMap.clause_list[i]
+            for clause in PhiMap.clause_list[:i]:
+                curr_literals = curr.split(':-')[1].split(';')
+                clause_literals = clause.split(':-')[1].split(';')
+                if set(clause_literals) == set(curr_literals):
+                    copied = True
+            if not copied:
+                nc.append(curr)
+
+        PhiMap.clause_list = nc
+            
 
     @staticmethod
     def remove_redundant(facts,pos,neg):
