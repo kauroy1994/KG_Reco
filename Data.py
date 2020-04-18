@@ -36,17 +36,17 @@ class Reco_data(object):
         """
 
         facts,pos,neg = [],[],[]
-        n_artists = 3
+        n_artists = 5
         artists = [('ar'+str(i)) for i in range(n_artists)]
         artist_albums = {}
         albums = []
         for artist in artists:
-            artist_albums[artist] = [(artist+'al'+str(i)) for i in range(3)]
+            artist_albums[artist] = [(artist+'al'+str(i)) for i in range(5)]
             albums += artist_albums[artist]
         album_songs = {}
         songs = []
         for album in albums:
-            album_songs[album] = [(album+'s'+str(i)) for i in range(4)]
+            album_songs[album] = [(album+'s'+str(i)) for i in range(10)]
             songs += album_songs[album]
         popular = [int(random() > 0.5) for i in range(n_artists)]
         p_types = [('fan'+str(i)) for i in range(n_artists)]
@@ -54,6 +54,7 @@ class Reco_data(object):
         n_persons = 10
         persons = [('p'+str(i)) for i in range(n_persons)]
         person_types = [choice(p_types) for i in range(n_persons)]
+        print ("Person type: ",person_types[0])
         #print (person_types)
         #print (popular)
         n_songs = len(songs)
