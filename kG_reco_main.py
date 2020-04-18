@@ -2,6 +2,35 @@ from Data import Reco_data
 from PhiMap import PhiMap
 from random import choice
 from Prover import Prover
+from sklearn.svm import LinearSVC
+from numpy import array
+
+def dot(a,b):
+
+    n = len(a)
+    return (sum([a[i]*b[i] for i in range(n)]))
+
+def run_linSVM(data,all_clauses):
+    """runs scikit-learns linear SVM module
+    """
+    print ('='*40+" Weights learned by linear SVM"+'='*40)
+    X,y = array(data[0]),array(data[1])
+    clf = LinearSVC()
+    #clf = SVC(kernel = 'linear')
+    clf.fit(X,y)
+    coeffs = list(clf.coef_[0])
+    for clause in all_clauses:
+        print (clause,coeffs[all_clauses.index(clause)])
+    
+    sv_count = 0
+    print ('='*80)
+    for item in X:
+        W = coeffs + [clf.intercept_[0]]
+        x_item = list(item)+[1.0]
+        if round(abs(dot(W,x_item)),1) == 1.0:
+            sv_count += 1
+    print ("Number of support vectors",sv_count)
+    
 
 def get_one_person_data(collab_data,context_data,all_clauses):
     """gets random persons data
@@ -33,7 +62,7 @@ def get_one_person_data(collab_data,context_data,all_clauses):
         for clause in all_clauses:
             Prover.rule = clause
             Prover.facts = facts
-            person_song[(person,song)] += [float(Prover.prove_rule(example))]
+            person_song[(person,song)] += [float(Prover.prove_rule(example))+1.0]
 
         if example in collab_data_pos or example in context_data_pos:
             person_song[(person,song)] += [int(1)]
@@ -86,6 +115,8 @@ def main():
         print (clause)
         
     person_data = get_one_person_data(collab_data,context_data,all_clauses)
+
+    run_linSVM(person_data,all_clauses)
 
 
 if __name__ == '__main__':

@@ -191,7 +191,7 @@ class PhiMap(object):
                         continue
                     example_list = list(examples.keys())
                     n = len(example_list)
-                    #print (clause)
+                    print ("Checking theory:",clause)
                     Prover.rule = clause
                     Prover.facts = facts
                     for example in example_list:
@@ -223,7 +223,7 @@ class PhiMap(object):
                             continue
                         example_list = list(node.examples.keys())
                         n = len(example_list)
-                        #print (clause)
+                        print ("Checking theory:",clause)
                         Prover.rule = clause
                         Prover.facts = facts
                         for example in example_list:
